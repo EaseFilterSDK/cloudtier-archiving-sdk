@@ -1,24 +1,37 @@
-# CloudTier S3 Intelligent-Tiering demo
+# ☁️ Cloud Archiving & Storage Tiering Solution
+
+[![Platform](https://img.shields.io/badge/platform-Windows-blue.svg)]()
+[![Language](https://img.shields.io/badge/language-C%23-green.svg)]()
+[![Cloud](https://img.shields.io/badge/cloud-Amazon%20S3-orange.svg)]()
+
+> Enterprise-grade Hierarchical Storage Management (HSM) and transparent data tiering for hybrid-cloud environments.
+
+CloudTier implements a sophisticated, transparent archiving solution that monitors local storage and automatically transitions cold data to cheaper, long-term cloud storage tiers (AWS S3 Glacier, Azure Archive Storage). Inspired by advanced filter driver architectures, CloudTier leaves behind zero-byte stub files, ensuring users and legacy applications experience zero disruption while saving up to 80% on local storage costs.
+
+## ✨ Enterprise Features
+
+* **Transparent Stub Files (Reparse Points):** Archived files are replaced with sparse, zero-byte stubs that retain the original file name, metadata, and ACLs. To users and applications, the files appear perfectly intact on the local drive.
+* **Block-Level Partial Hydration:** When an application reads a stub file, CloudTier intercepts the I/O request and streams only the specific byte ranges requested via HTTP range requests, eliminating the need to download massive files in their entirety.
+* **Automated Policy Enforcement:** Trigger migrations based on Last Access Time (e.g., > 90 days), specific file extensions, or volume capacity thresholds (e.g., migrate oldest files when disk > 80% full).
+* **Multi-Cloud Support:** Agnostic archiving policies across AWS, Azure, and Google Cloud.
+* **Cost Analytics & Dry-Run:** Predict savings and safely test archiving policies without physically moving data.
+
+## 🏗 Architecture
+
+CloudTier operates as a deeply integrated HSM pipeline:
+![CloudTier archiving](https://www.easefilter.com/images/cloud-archiving.jpg)
+
+1. **Monitoring & Policy Evaluation:** A background daemon scans directory metadata and volume capacity against customizable age, size, and access-frequency rules.
+2. **Secure Offloading:** Cold data is encrypted and streamed to low-cost cloud object storage.
+3. **Stub Replacement:** The local file is replaced with a zero-byte sparse stub file containing a custom reparse point pointer, maintaining 100% path continuity.
+4. **Transparent Recall:** A lightweight file system filter intercepts read requests to stub files and executes partial block hydration on-demand.
+
+## A C# CloudTier S3 Tiering demo
 The [CloudTier Storage Tiering SDK](https://www.easefilter.com/cloud/storage-tiering-sdk.htm) integrates S3 Intelligent-Tiering cloud storage with on-premise storage systems seamlessly, creating a hybrid storage environment.  So it allows on-premise applications to access S3 file objects transparently, just as they would access on-premise regular files. There is no interruption to move or restore your on-premise files to/from the cloud storage, so you don’t need to change your existing applications and infrastructure to be compatible with the cloud environment.
 
 The CloudTier S3 demo is a C# demo project, it demonstrates how to connect the S3 storage from your on-premise storage, and how to generate the test files in on-premise storage and S3 storage. It demonstrates how to browse and read the S3 files as a local regular files.
 ![CloudTier S3 Storage Tiering Demo](https://www.easefilter.com/images/CloudTierS3Demo.PNG)
 When you launch the CloudTier S3 demo, it will generate a few test stub files in your application folder’s sub folder “TestStubFolder”, the file’s content was stored in the sub folder “TestSourceFolder”, when you read the stub file, the file content will be retrieved from the source file, if your file content was stored in the S3 storage, then it will be retrieved from the S3, it can demonstrate how the storing tiering is working with this simple project.
-
-A stub file looks and acts like a regular file. It has the same file attributes with the original physical file (file size, creation time, last write time, last access time). It also keeps the original file’s security. The difference between the stub file and the normal physical file is the stub file doesn’t take any physical space, looks like a 0 kb file.
-![Stub file](https://www.easefilter.com/images/stub.png)
-
-## How to run the CloudTierS3 demo?
-
-1.	Excluded the process Id from the filter driver: the excluded processes can’t access the stub file. It can prevent the unwanted processes from downloading the data from the cloud storage.        
-2.	Filter connection threads: the number of the threads to handle the read requests of the stub files.
-3.	Connection timeout: the maximum time of the filter driver waiting for the data return from your application.
-4.	Cache folder path: the folder to store the cache files which download from the cloud storage.
-5.	The return data type: a. return block data on read: return the block of the requested read data if you have the block of the data. b. return cache file on read: return the cache file name if the whole file was downloaded. c. rehydrate file on first read: the file was downloaded to the cache folder, and the stub file will be rehydrated to the regular file.
-6.	Amazon S3 site settings: before you can test the S3 connection, you need to have an S3 account with the access key, then you can create a test bucket with the intelligent tiering enabled in Amazon S3 console. 
-7.	To browse the files in s3 or upload/download the files to/from S3, you can go to the [S3 explorer](https://www.easefilter.com/cloud/s3-browser-demo.htm). After the files were uploaded to the S3, then you can create the stub file from the S3 explorer.
-![S3 File Explorer](https://www.easefilter.com/images/s3explorer.png)
-8.	Read the S3 files: after the files were uploaded to the S3 cloud storage, you can replace your original file with the stub file based on your retention policies. You can create S3 stub file in S3 explorer. For example, to read the stub file by copying the stub file to another folder, you will see the S3 file will be downloaded to the cache folder from the S3 storage, after that the cache file will be returned to your local file system through the CloudTier filter driver, then the read request to the S3 file will be completed successfully. 
 
 ## EaseFilter File System Filter Driver SDK Reference
 | Product Name | Description |
@@ -59,6 +72,17 @@ A stub file looks and acts like a regular file. It has the same file attributes 
 * [Filter Driver Developer Guide](https://www.easefilter.com/kb/DeveloperGuide.htm)
 * [MiniFilter Filter Driver Framework](https://www.easefilter.com/kb/minifilter-framework.htm)
 * [Isolation Filter Driver](https://www.easefilter.com/kb/Isolation_Filter_Driver.htm)
+
+## License
+
+This repository contains two distinct licensing categories:
+
+1. **Wrapper/Implementation Code (MIT License):** 
+   The source code, scripts, and configuration files provided directly in this repository are licensed under the [MIT License](LICENSE). You are free to modify, distribute, and use this specific integration code.
+
+2. **EaseFilter SDK (Commercial License):**
+   This project requires the EaseFilter SDK (including its binaries, filter drivers, and core libraries) to function. The EaseFilter SDK is **proprietary commercial software** and is strictly excluded from the MIT License.   
+   To use the EaseFilter SDK for commercial purposes or in a production environment, you must obtain a valid commercial license directly from [EaseFilter](https://www.easefilter.com/license.pdf).
 
 ## Support
 If you have questions or need help, please contact support@easefilter.com 
