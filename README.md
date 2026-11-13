@@ -1,7 +1,7 @@
 # ☁️ Cloud Archiving & Storage Tiering Solution
 
 [![Platform](https://img.shields.io/badge/platform-Windows-blue.svg)]()
-[![Language](https://img.shields.io/badge/language-C%23-green.svg)]()
+[![Language](https://img.shields.io/badge/Language-C%23%20%7C%20C++%20%7C%20Python%20%7C%20Rust%20%7C%20Java-success.svg)]()
 [![Cloud](https://img.shields.io/badge/cloud-Amazon%20S3-orange.svg)]()
 
 > Enterprise-grade Hierarchical Storage Management (HSM) and transparent data tiering for hybrid-cloud environments.
